@@ -63,5 +63,4 @@ public class CategoriaService {
         Categoria categoria = categoriaRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("Categoria não encontrada"));
         return categoriaMapper.toResponseDTO(categoria);
     }
-
 }

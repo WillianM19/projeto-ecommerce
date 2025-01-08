@@ -31,6 +31,12 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.lista());
     }
 
+    @Operation(summary = "Listar categoria por Id")
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoriaResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(categoriaService.buscarPorId(id));
+    }
+
     @Operation(summary = "Deletar uma nova categoria")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
