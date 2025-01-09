@@ -27,17 +27,17 @@ public class ClienteController {
     }
 
     // GET - Buscar cliente por ID
-    @Operation(summary = "Buscar cliente por ID")
+    @Operation(summary = "Buscar cliente por id")
     @GetMapping("/{id}")
-    public ResponseEntity<ClienteResponseDTO> buscarPorId(@PathVariable Long id) {
+    public ResponseEntity<ClienteResponseDTO> buscarPorId(Long id) {
         return ResponseEntity.ok(clienteService.buscarPorId(id));
     }
 
     // GET - Listar todos os clientes
     @Operation(summary = "Listar todos os clientes")
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> listarTodos() {
-        return ResponseEntity.ok(clienteService.listarTodos());
+    public ResponseEntity<List<ClienteResponseDTO>> lista() {
+        return ResponseEntity.ok(clienteService.lista());
     }
 
     // PUT - Atualizar dados do cliente
