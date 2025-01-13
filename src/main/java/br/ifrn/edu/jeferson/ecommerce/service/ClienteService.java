@@ -5,8 +5,10 @@ import br.ifrn.edu.jeferson.ecommerce.domain.Cliente;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.CategoriaResponseDTO;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ClienteRequestDTO;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ClienteResponseDTO;
+import br.ifrn.edu.jeferson.ecommerce.domain.dtos.PedidoResponseDTO;
 import br.ifrn.edu.jeferson.ecommerce.exception.BusinessException;
 import br.ifrn.edu.jeferson.ecommerce.mapper.ClienteMapper;
+import br.ifrn.edu.jeferson.ecommerce.mapper.PedidoMapper;
 import br.ifrn.edu.jeferson.ecommerce.repository.ClienteRepository;
 import br.ifrn.edu.jeferson.ecommerce.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,10 @@ public class ClienteService {
 
     @Autowired
     private ClienteMapper clienteMapper;
+
+    @Autowired
+    private PedidoMapper pedidoMapper;
+
 
     // Salvar um novo cliente
     public ClienteResponseDTO salvar(ClienteRequestDTO clienteRequestDTO) {
@@ -65,4 +71,11 @@ public class ClienteService {
 
         return clienteMapper.toResponseDTO(clienteAlterado);
     }
+
+    public List<PedidoResponseDTO> listarPedidosDoCliente(Long id) {
+        Cliente cliente = clienteRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
+        return pedidoMapper.toDTOList(cliente.getPedidos());
+    }
+
 }
