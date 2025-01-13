@@ -2,6 +2,7 @@ package br.ifrn.edu.jeferson.ecommerce.controller;
 
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.CategoriaRequestDTO;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.CategoriaResponseDTO;
+import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ProdutoResponseDTO;
 import br.ifrn.edu.jeferson.ecommerce.service.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,4 +51,15 @@ public class CategoriaController {
         return ResponseEntity.ok(categoriaService.atualizar(id, categoriaDto));
     }
 
+    @Operation(summary = "Adicionar um produto a uma categoria")
+    @PostMapping("/{categoriaId}/produtos/{produtoId}")
+    public ResponseEntity<ProdutoResponseDTO> adicionarProdutoACategoria(@PathVariable Long categoriaId, @PathVariable Long produtoId) {
+        return ResponseEntity.ok(categoriaService.adicionarProdutoACategoria(categoriaId, produtoId));
+    }
+
+    @Operation(summary = "Remover um produto de uma categoria")
+    @DeleteMapping("/{categoriaId}/produtos/{produtoId}")
+    public ResponseEntity<ProdutoResponseDTO> removerProdutoDaCategoria(@PathVariable Long categoriaId, @PathVariable Long produtoId) {
+        return ResponseEntity.ok(categoriaService.removerProdutoDaCategoria(categoriaId, produtoId));
+    }
 }
