@@ -26,7 +26,7 @@ public class Pedido {
     private StatusPedido statusPedido;
 
     @ManyToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente;
 
     @OneToMany(mappedBy = "pedido")

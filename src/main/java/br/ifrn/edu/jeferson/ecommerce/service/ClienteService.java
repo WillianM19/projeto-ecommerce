@@ -2,6 +2,7 @@ package br.ifrn.edu.jeferson.ecommerce.service;
 
 import br.ifrn.edu.jeferson.ecommerce.domain.Categoria;
 import br.ifrn.edu.jeferson.ecommerce.domain.Cliente;
+import br.ifrn.edu.jeferson.ecommerce.domain.Pedido;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.CategoriaResponseDTO;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ClienteRequestDTO;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ClienteResponseDTO;
@@ -11,6 +12,7 @@ import br.ifrn.edu.jeferson.ecommerce.mapper.ClienteMapper;
 import br.ifrn.edu.jeferson.ecommerce.mapper.PedidoMapper;
 import br.ifrn.edu.jeferson.ecommerce.repository.ClienteRepository;
 import br.ifrn.edu.jeferson.ecommerce.exception.ResourceNotFoundException;
+import br.ifrn.edu.jeferson.ecommerce.repository.PedidoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +31,29 @@ public class ClienteService {
     @Autowired
     private PedidoMapper pedidoMapper;
 
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    private void verificarExistenciaDeCpf(String cpf) {
+        if (clienteRepository.existsByCpf(cpf)) {
+            throw new BusinessException(String.format("Cliente com CPF %s já cadastrado", cpf));
+        }
+    }
+
+    private void verificarExistenciaDeEmail(String email) {
+        if (clienteRepository.existsByEmail(email)) {
+            throw new BusinessException(String.format("O email %s já está sendo usado", email));
+        }
+    }
+
+    private void validaCliente(ClienteRequestDTO clienteDto) {
+        verificarExistenciaDeCpf(clienteDto.getCpf());
+        verificarExistenciaDeEmail(clienteDto.getEmail());
+    }
 
     // Salvar um novo cliente
     public ClienteResponseDTO salvar(ClienteRequestDTO clienteRequestDTO) {
+        validaCliente(clienteRequestDTO);
         var cliente = clienteMapper.toEntity(clienteRequestDTO);
 
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
@@ -60,12 +82,22 @@ public class ClienteService {
         if (!clienteRepository.existsById(id)) {
             throw new BusinessException("Cliente não encontrado para o ID: " + id);
         }
+
+        List<Pedido> pedidos = pedidoRepository.findByClienteId(id);
+
+        if (!pedidos.isEmpty()) {
+            for (Pedido pedido : pedidos) {
+                pedido.setCliente(null);
+                pedidoRepository.save(pedido);
+            }
+        }
+
         clienteRepository.deleteById(id);
     }
 
     public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO clienteDto) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("Cliente não encontrado"));
-
+        validaCliente(clienteDto);
         clienteMapper.updateEntityFromDTO(clienteDto, cliente);
         var clienteAlterado = clienteRepository.save(cliente);
 
