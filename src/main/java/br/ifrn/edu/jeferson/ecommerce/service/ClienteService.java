@@ -17,6 +17,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,6 +37,8 @@ public class ClienteService {
 
     @Autowired
     private PedidoRepository pedidoRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(ClienteService.class);
 
     private void verificarExistenciaDeCpf(String cpf) {
         if (clienteRepository.existsByCpf(cpf)) {
@@ -55,6 +59,7 @@ public class ClienteService {
 
     // Salvar um novo cliente
     public ClienteResponseDTO salvar(ClienteRequestDTO clienteRequestDTO) {
+        logger.info("Salvando uma novo cliente...");
         validaCliente(clienteRequestDTO);
         var cliente = clienteMapper.toEntity(clienteRequestDTO);
 
@@ -63,11 +68,13 @@ public class ClienteService {
         }
 
         clienteRepository.save(cliente);
+        logger.info("Cliente Salvo! {}", cliente.getId());
         return clienteMapper.toResponseDTO(cliente);
     }
 
     // Buscar cliente por ID
     public ClienteResponseDTO buscarPorId(Long id) {
+        logger.info("Buscando clientes por id: {}", id);
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("Cliente não encontrado para o ID: " + id));
         return clienteMapper.toResponseDTO(cliente);
@@ -77,12 +84,14 @@ public class ClienteService {
     public Page<ClienteResponseDTO> lista(
             Pageable pageable
     ){
+        logger.info("Listando clientes...");
         Page<Cliente> clientes = clienteRepository.findAll(pageable);
         return clienteMapper.toDTOPage(clientes);
     }
 
     // Excluir cliente por ID
     public void deletar(Long id) {
+        logger.info("Deletando cliente: {}", id);
         if (!clienteRepository.existsById(id)) {
             throw new BusinessException("Cliente não encontrado para o ID: " + id);
         }
@@ -95,20 +104,22 @@ public class ClienteService {
                 pedidoRepository.save(pedido);
             }
         }
-
+        logger.info("Cliente Deletado!");
         clienteRepository.deleteById(id);
     }
 
     public ClienteResponseDTO atualizar(Long id, ClienteRequestDTO clienteDto) {
+        logger.info("Atualizando dados do cliente: {}", id);
         Cliente cliente = clienteRepository.findById(id).orElseThrow( () -> new ResourceNotFoundException("Cliente não encontrado"));
         validaCliente(clienteDto);
         clienteMapper.updateEntityFromDTO(clienteDto, cliente);
         var clienteAlterado = clienteRepository.save(cliente);
-
+        logger.info("Cliente Atualizado!");
         return clienteMapper.toResponseDTO(clienteAlterado);
     }
 
     public List<PedidoResponseDTO> listarPedidosDoCliente(Long id) {
+        logger.info("Listando pedidos do cliente...");
         Cliente cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Cliente não encontrado"));
         return pedidoMapper.toDTOList(cliente.getPedidos());
