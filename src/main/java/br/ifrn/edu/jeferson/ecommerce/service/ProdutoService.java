@@ -1,9 +1,15 @@
 package br.ifrn.edu.jeferson.ecommerce.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import br.ifrn.edu.jeferson.ecommerce.specification.ProdutoSpecification;
+
 
 import br.ifrn.edu.jeferson.ecommerce.domain.Produto;
 import br.ifrn.edu.jeferson.ecommerce.domain.dtos.ProdutoRequestDTO;
@@ -26,9 +32,17 @@ public class ProdutoService {
         return produtoMapper.toResponseDTO(produto);
     }
 
-    public List<ProdutoResponseDTO> lista(){
-        List<Produto> produtos = produtoRepository.findAll();
-        return produtoMapper.toDTOList(produtos);
+    public Page<ProdutoResponseDTO> lista(
+            Pageable pageable,
+            String nome,
+            BigDecimal precoMaiorQue,
+            BigDecimal precoMenorQue
+    ){
+        Specification<Produto> spec = Specification.where(ProdutoSpecification.comNomeContendo(nome))
+                .and(ProdutoSpecification.comPrecoMaiorQue(precoMaiorQue))
+                .and(ProdutoSpecification.comPrecoMenorQue(precoMenorQue));
+        Page<Produto> produtos = produtoRepository.findAll(spec, pageable);
+        return produtoMapper.toDTOPage(produtos);
     }
 
     public void deletar(Long id) {
