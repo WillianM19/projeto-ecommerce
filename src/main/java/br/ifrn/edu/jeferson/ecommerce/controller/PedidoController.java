@@ -22,6 +22,8 @@ import br.ifrn.edu.jeferson.ecommerce.service.PedidoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import org.springframework.cache.annotation.Cacheable;
+
 @Controller
 @RequestMapping("/api/pedidos")
 @Tag(name = "Pedidos", description = "API de gerenciamento de pedidos")
@@ -37,6 +39,7 @@ public class PedidoController {
     }
 
     @Operation(summary = "Listar pedidos")
+    @Cacheable(value = "pedidos", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     @GetMapping
     public ResponseEntity<Page<PedidoResponseDTO>> listar(
             Pageable pageable
@@ -48,7 +51,7 @@ public class PedidoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         pedidoService.deletar(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Atualizar status do pedido")
