@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +37,7 @@ public class ProdutoController {
 
     @Operation(summary = "Listar produtos")
     @GetMapping
+    @Cacheable(value = "produtos", key = "#nome + '-' + #precoMaiorQue + '-' + #precoMenorQue + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
     public ResponseEntity<List<ProdutoResponseDTO>> lista() {
         return ResponseEntity.ok(produtoService.lista());
     }
