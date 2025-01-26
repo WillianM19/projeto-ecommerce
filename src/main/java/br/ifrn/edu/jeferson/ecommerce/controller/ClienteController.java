@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -34,8 +36,10 @@ public class ClienteController {
 
     @Operation(summary = "Listar todos os clientes")
     @GetMapping
-    public ResponseEntity<List<ClienteResponseDTO>> lista() {
-        return ResponseEntity.ok(clienteService.lista());
+    public ResponseEntity<Page<ClienteResponseDTO>> lista(
+            Pageable pageable
+    ) {
+        return ResponseEntity.ok(clienteService.lista(pageable));
     }
 
     @Operation(summary = "Atualizar dados do cliente")
