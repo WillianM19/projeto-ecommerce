@@ -3,6 +3,7 @@ package br.ifrn.edu.jeferson.ecommerce.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @Operation(summary = "Criar um novo pedido")
+    @CacheEvict(value = "pedidos", allEntries = true)
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> salvar(@RequestBody PedidoRequestDTO pedidoDto) {
         return ResponseEntity.ok(pedidoService.salvar(pedidoDto));
@@ -50,6 +52,7 @@ public class PedidoController {
     }
 
     @Operation(summary = "Deletar um pedido")
+    @CacheEvict(value = "pedidos", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         pedidoService.deletar(id);
@@ -57,6 +60,7 @@ public class PedidoController {
     }
 
     @Operation(summary = "Atualizar status do pedido")
+    @CacheEvict(value = "pedidos", allEntries = true)
     @PutMapping("/{id}/status")
     public ResponseEntity<PedidoResponseDTO> atualizarStatusPedido(@PathVariable Long id, @RequestBody AtualizarStatusRequestDTO statusPedidoDto) {
         return ResponseEntity.ok(pedidoService.atualizarStatusPedido(id, statusPedidoDto.getStatusPedido()));

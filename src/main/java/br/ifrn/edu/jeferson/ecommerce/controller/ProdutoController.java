@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +27,7 @@ public class ProdutoController {
     ProdutoService produtoService;
 
     @Operation(summary = "Criar um novo produto")
+    @CacheEvict(value = "produtos", allEntries = true)
     @PostMapping
     public ResponseEntity<ProdutoResponseDTO> salvar(@RequestBody ProdutoRequestDTO produtoDto) {
         return ResponseEntity.ok(produtoService.salvar(produtoDto));
@@ -50,6 +52,7 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Deletar produto")
+    @CacheEvict(value = "produtos", allEntries = true)
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(Long id) {
         produtoService.deletar(id);
@@ -57,6 +60,7 @@ public class ProdutoController {
     }
 
     @Operation(summary = "Atualizar produto")
+    @CacheEvict(value = "produtos", allEntries = true)
     @PutMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> atualizar(Long id, @RequestBody ProdutoRequestDTO produtoDto) {
         return ResponseEntity.ok(produtoService.atualizar(id, produtoDto));
